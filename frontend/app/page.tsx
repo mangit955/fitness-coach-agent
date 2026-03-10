@@ -147,8 +147,8 @@ export default function Home() {
           <div className="border-b border-white/5 bg-[#17181d] px-5 py-4">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/6 bg-[#23242b] text-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-                  💪
+                <div className="flex bg-neutral-300 h-12 w-12 items-center justify-center rounded-full border border-white/6 bg-[#23242b] text-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                  🧑🏻
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-white">FitCoach</p>
@@ -174,7 +174,7 @@ export default function Home() {
                   <span
                     aria-label="Idle status"
                     className={`h-2.5 w-2.5 rounded-full ${
-                      isTerminalFocused ? "bg-sky-500" : "bg-zinc-600"
+                      isTerminalFocused ? "bg-emerald-500" : "bg-zinc-600"
                     }`}
                   />
                   <span className="text-xs text-zinc-400">
@@ -278,7 +278,7 @@ export default function Home() {
                 type="button"
                 onClick={() => void submitCommand()}
                 disabled={isRunning}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#0a84ff] text-lg text-white transition hover:bg-[#3797ff] disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex cursor-pointer h-10 w-10 items-center justify-center rounded-full bg-[#0a84ff] text-lg text-white transition hover:bg-[#3797ff] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 ↑
               </button>
