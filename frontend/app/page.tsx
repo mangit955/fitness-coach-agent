@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useEffect, useRef, useState } from "react";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/chat";
@@ -37,6 +37,26 @@ const initialEntries: TerminalEntry[] = [
 ];
 
 const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+const getRequestErrorMessage = (error: unknown) => {
+  if (axios.isAxiosError(error)) {
+    const axiosError = error as AxiosError<{ detail?: string; response?: string }>;
+    if (axiosError.response) {
+      const payload = axiosError.response.data;
+      const detail =
+        typeof payload === "string"
+          ? payload
+          : payload?.detail || payload?.response || "request failed";
+      return `backend request failed :: ${axiosError.response.status} ${detail}`;
+    }
+    if (axiosError.request) {
+      return `backend request failed :: no response from ${apiUrl}`;
+    }
+    return `backend request failed :: ${axiosError.message}`;
+  }
+
+  return "backend request failed :: check NEXT_PUBLIC_API_URL and the FastAPI server";
+};
 
 export default function Home() {
   const [command, setCommand] = useState("");
@@ -105,11 +125,11 @@ export default function Home() {
       setCurrentStage("responding");
       await streamAssistantResponse(response.data.response);
       setCurrentStage("idle");
-    } catch {
+    } catch (error) {
       appendEntry({
         id: `${Date.now()}-error`,
         kind: "error",
-        text: "backend request failed :: check NEXT_PUBLIC_API_URL and the FastAPI server",
+        text: getRequestErrorMessage(error),
       });
       setCurrentStage("idle");
     } finally {
