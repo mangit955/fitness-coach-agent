@@ -3,7 +3,7 @@
 import axios, { AxiosError } from "axios";
 import { useEffect, useRef, useState } from "react";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/chat";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const promptSuggestions = [
   "plan a 4-day fat loss workout",
   "how much protein should i eat daily?",
@@ -36,11 +36,15 @@ const initialEntries: TerminalEntry[] = [
   },
 ];
 
-const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+const wait = (ms: number) =>
+  new Promise((resolve) => window.setTimeout(resolve, ms));
 
 const getRequestErrorMessage = (error: unknown) => {
   if (axios.isAxiosError(error)) {
-    const axiosError = error as AxiosError<{ detail?: string; response?: string }>;
+    const axiosError = error as AxiosError<{
+      detail?: string;
+      response?: string;
+    }>;
     if (axiosError.response) {
       const payload = axiosError.response.data;
       const detail =
@@ -158,7 +162,13 @@ export default function Home() {
                   isRunning ? "animate-pulse bg-emerald-400" : "bg-zinc-600"
                 }`}
               />
-              <span>{isRunning ? currentStage : isTerminalFocused ? "active" : "idle"}</span>
+              <span>
+                {isRunning
+                  ? currentStage
+                  : isTerminalFocused
+                    ? "active"
+                    : "idle"}
+              </span>
             </div>
           </div>
 
@@ -173,14 +183,22 @@ export default function Home() {
                     <p className="mb-2 text-[11px] uppercase tracking-[0.28em] text-cyan-300/85">
                       fitcoach
                     </p>
-                    <p className="whitespace-pre-wrap text-zinc-100">{entry.text || "..."}</p>
+                    <p className="whitespace-pre-wrap text-zinc-100">
+                      {entry.text || "..."}
+                    </p>
                   </div>
                 ) : entry.kind === "user" ? (
-                  <p className="whitespace-pre-wrap text-cyan-300">{entry.text}</p>
+                  <p className="whitespace-pre-wrap text-cyan-300">
+                    {entry.text}
+                  </p>
                 ) : entry.kind === "error" ? (
-                  <p className="whitespace-pre-wrap text-rose-300">{entry.text}</p>
+                  <p className="whitespace-pre-wrap text-rose-300">
+                    {entry.text}
+                  </p>
                 ) : (
-                  <p className="whitespace-pre-wrap text-zinc-500">{entry.text}</p>
+                  <p className="whitespace-pre-wrap text-zinc-500">
+                    {entry.text}
+                  </p>
                 )}
               </div>
             ))}
@@ -240,7 +258,9 @@ export default function Home() {
               A terminal-like fitness coach with agent-style responses.
             </h1>
             <p className="mt-4 max-w-lg text-sm leading-7 text-zinc-400">
-              Ask for training plans, nutrition guidance, or progress reviews. The interface keeps the interaction tight, command-driven, and closer to an actual agent session.
+              Ask for training plans, nutrition guidance, or progress reviews.
+              The interface keeps the interaction tight, command-driven, and
+              closer to an actual agent session.
             </p>
           </div>
 
@@ -272,7 +292,10 @@ export default function Home() {
             <div className="mt-4 space-y-3 font-mono text-sm leading-6 text-zinc-200">
               <p>1. Reads your prompt like an instruction, not a form field.</p>
               <p>2. Shows system activity before returning the final answer.</p>
-              <p>3. Prints output as a transcript instead of a single response box.</p>
+              <p>
+                3. Prints output as a transcript instead of a single response
+                box.
+              </p>
             </div>
           </div>
         </aside>

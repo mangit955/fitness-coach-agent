@@ -5,7 +5,7 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 
 
-API_URL = os.getenv("FITNESS_API_URL", "http://127.0.0.1:8000/chat")
+API_URL = os.getenv("FITNESS_API_URL",)
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 
