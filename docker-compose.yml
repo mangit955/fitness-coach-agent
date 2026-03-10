@@ -1,0 +1,42 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      OPENCLAW_BASE_URL: ${OPENCLAW_BASE_URL}
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN}
+      OPENCLAW_AGENT_ID: ${OPENCLAW_AGENT_ID:-main}
+      OPENCLAW_TIMEOUT_SECONDS: ${OPENCLAW_TIMEOUT_SECONDS:-45}
+      CORS_ALLOW_ORIGINS: ${CORS_ALLOW_ORIGINS:-http://localhost:3000}
+      FITNESS_DB_PATH: /data/fitness_coach.db
+    volumes:
+      - backend-data:/data
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000/chat}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  telegram-bot:
+    build:
+      context: .
+      dockerfile: telegram/Dockerfile
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      FITNESS_API_URL: ${FITNESS_API_URL:-http://backend:8000/chat}
+    depends_on:
+      - backend
+    profiles:
+      - telegram
+
+volumes:
+  backend-data:

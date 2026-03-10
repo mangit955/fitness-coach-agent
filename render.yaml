@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: fitness-coach-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    envVars:
+      - key: OPENCLAW_BASE_URL
+        sync: false
+      - key: OPENCLAW_GATEWAY_TOKEN
+        sync: false
+      - key: OPENCLAW_AGENT_ID
+        value: main
+      - key: OPENCLAW_TIMEOUT_SECONDS
+        value: "45"
+      - key: CORS_ALLOW_ORIGINS
+        sync: false
+      - key: FITNESS_DB_PATH
+        value: /var/data/fitness_coach.db
+    disk:
+      name: fitness-coach-data
+      mountPath: /var/data
+      sizeGB: 1
+
+  - type: web
+    name: fitness-coach-frontend
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
+
+  - type: worker
+    name: fitness-coach-telegram
+    runtime: docker
+    dockerfilePath: ./telegram/Dockerfile
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: FITNESS_API_URL
+        sync: false
