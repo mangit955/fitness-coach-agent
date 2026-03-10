@@ -4,17 +4,24 @@ import sys
 import requests
 
 
+def clean_env(name: str, default: str = "") -> str:
+    value = os.getenv(name, default).strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+        return value[1:-1].strip()
+    return value
+
+
 def check_backend() -> None:
-    backend_url = os.getenv("BACKEND_HEALTH_URL", "http://127.0.0.1:8000/health")
+    backend_url = clean_env("BACKEND_HEALTH_URL", "http://127.0.0.1:8000/health")
     response = requests.get(backend_url, timeout=10)
     response.raise_for_status()
     print(f"backend ok: {response.json()}")
 
 
 def check_openclaw() -> None:
-    base_url = os.getenv("OPENCLAW_BASE_URL")
-    token = os.getenv("OPENCLAW_GATEWAY_TOKEN")
-    agent_id = os.getenv("OPENCLAW_AGENT_ID", "main")
+    base_url = clean_env("OPENCLAW_BASE_URL")
+    token = clean_env("OPENCLAW_GATEWAY_TOKEN")
+    agent_id = clean_env("OPENCLAW_AGENT_ID", "main")
     if not base_url or not token:
         print("openclaw skipped: missing OPENCLAW_BASE_URL or OPENCLAW_GATEWAY_TOKEN")
         return
@@ -30,7 +37,7 @@ def check_openclaw() -> None:
 
 
 def check_telegram() -> None:
-    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    token = clean_env("TELEGRAM_BOT_TOKEN")
     if not token:
         print("telegram skipped: missing TELEGRAM_BOT_TOKEN")
         return

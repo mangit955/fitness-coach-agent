@@ -2,14 +2,22 @@ import os
 from typing import Optional
 
 import requests
+from requests import HTTPError
+
+
+def _clean_env(name: str, default: str = "") -> str:
+    value = os.getenv(name, default).strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+        return value[1:-1].strip()
+    return value
 
 
 class OpenClawClient:
     def __init__(self) -> None:
-        self.base_url = os.getenv("OPENCLAW_BASE_URL", "").rstrip("/")
-        self.token = os.getenv("OPENCLAW_GATEWAY_TOKEN")
-        self.agent_id = os.getenv("OPENCLAW_AGENT_ID", "main")
-        self.timeout = int(os.getenv("OPENCLAW_TIMEOUT_SECONDS", "45"))
+        self.base_url = _clean_env("OPENCLAW_BASE_URL").rstrip("/")
+        self.token = _clean_env("OPENCLAW_GATEWAY_TOKEN")
+        self.agent_id = _clean_env("OPENCLAW_AGENT_ID", "main")
+        self.timeout = int(_clean_env("OPENCLAW_TIMEOUT_SECONDS", "45"))
 
     def is_configured(self) -> bool:
         return bool(self.base_url and self.token and self.agent_id)
@@ -32,7 +40,14 @@ class OpenClawClient:
             },
             timeout=self.timeout,
         )
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError as exc:
+            body = response.text.strip()
+            detail = f"OpenClaw HTTP {response.status_code}"
+            if body:
+                detail = f"{detail}: {body[:1000]}"
+            raise RuntimeError(detail) from exc
         payload = response.json()
         text = self._extract_text(payload)
         if not text:
