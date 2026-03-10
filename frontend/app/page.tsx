@@ -57,6 +57,30 @@ export default function Home() {
     setEntries((current) => [...current, entry]);
   };
 
+  const updateEntry = (id: string, text: string) => {
+    setEntries((current) =>
+      current.map((entry) => (entry.id === id ? { ...entry, text } : entry)),
+    );
+  };
+
+  const streamAssistantResponse = async (responseText: string) => {
+    const assistantId = `${Date.now()}-assistant`;
+    appendEntry({
+      id: assistantId,
+      kind: "assistant",
+      text: "",
+    });
+
+    const chunks = responseText.split(/(\s+)/);
+    let rendered = "";
+
+    for (const chunk of chunks) {
+      rendered += chunk;
+      updateEntry(assistantId, rendered);
+      await wait(chunk.trim() ? 22 : 8);
+    }
+  };
+
   const submitCommand = async (rawCommand?: string) => {
     const nextCommand = (rawCommand ?? command).trim();
     if (!nextCommand || isRunning) {
@@ -65,7 +89,7 @@ export default function Home() {
 
     setCommand("");
     setIsRunning(true);
-    setCurrentStage("analyzing");
+    setCurrentStage("thinking");
 
     appendEntry({
       id: `${Date.now()}-user`,
@@ -73,33 +97,13 @@ export default function Home() {
       text: `> ${nextCommand}`,
     });
 
-    appendEntry({
-      id: `${Date.now()}-system-analyze`,
-      kind: "system",
-      text: "analyzing request ...",
-    });
-
     try {
-      await wait(220);
-      setCurrentStage("routing");
-      appendEntry({
-        id: `${Date.now()}-system-route`,
-        kind: "system",
-        text: "routing through fitness coach backend ...",
-      });
-
-      await wait(260);
-      setCurrentStage("responding");
       const response = await axios.post(apiUrl, {
         message: nextCommand,
         user_id: "web-user",
       });
-
-      appendEntry({
-        id: `${Date.now()}-assistant`,
-        kind: "assistant",
-        text: response.data.response,
-      });
+      setCurrentStage("responding");
+      await streamAssistantResponse(response.data.response);
       setCurrentStage("idle");
     } catch {
       appendEntry({
@@ -144,21 +148,27 @@ export default function Home() {
           >
             {entries.map((entry) => (
               <div key={entry.id} className="mb-3 last:mb-0">
-                <p
-                  className={
-                    entry.kind === "assistant"
-                      ? "whitespace-pre-wrap text-zinc-100"
-                      : entry.kind === "user"
-                        ? "whitespace-pre-wrap text-cyan-300"
-                        : entry.kind === "error"
-                          ? "whitespace-pre-wrap text-rose-300"
-                          : "whitespace-pre-wrap text-zinc-500"
-                  }
-                >
-                  {entry.text}
-                </p>
+                {entry.kind === "assistant" ? (
+                  <div className="rounded-2xl border border-cyan-400/10 bg-cyan-400/4 px-4 py-3">
+                    <p className="mb-2 text-[11px] uppercase tracking-[0.28em] text-cyan-300/85">
+                      fitcoach
+                    </p>
+                    <p className="whitespace-pre-wrap text-zinc-100">{entry.text || "..."}</p>
+                  </div>
+                ) : entry.kind === "user" ? (
+                  <p className="whitespace-pre-wrap text-cyan-300">{entry.text}</p>
+                ) : entry.kind === "error" ? (
+                  <p className="whitespace-pre-wrap text-rose-300">{entry.text}</p>
+                ) : (
+                  <p className="whitespace-pre-wrap text-zinc-500">{entry.text}</p>
+                )}
               </div>
             ))}
+            {isRunning && currentStage === "thinking" ? (
+              <div className="mb-3">
+                <p className="text-zinc-500">fitcoach is thinking ...</p>
+              </div>
+            ) : null}
           </div>
 
           <div className="border-t border-white/8 bg-zinc-950 px-4 py-4">
