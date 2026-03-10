@@ -1,0 +1,20 @@
+{
+  "gateway": {
+    "port": 18789,
+    "bind": "lan",
+    "auth": {
+      "mode": "token",
+      "token": "6f5b698c6f63e3ccbf908956dc332a93fbda3e3edbf7baed"
+    },
+    "http": {
+      "endpoints": {
+        "responses": {
+          "enabled": true
+        }
+      }
+    },
+    "controlUi": {
+      "enabled": false
+    }
+  }
+}
