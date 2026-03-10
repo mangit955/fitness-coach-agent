@@ -3,14 +3,10 @@
 import axios, { AxiosError } from "axios";
 import { useEffect, useRef, useState } from "react";
 
+import { PulsatingButton } from "@/components/pulsating-button";
+
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-const promptSuggestions = [
-  "plan a 4-day fat loss workout",
-  "how much protein should i eat daily?",
-  "log weight 72.4",
-  "show my progress",
-  "build a beginner muscle gain plan",
-];
+const quickPrompts = ["fat loss plan", "protein target", "log weight 72.4"];
 
 type TerminalEntry = {
   id: string;
@@ -142,10 +138,33 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(244,114,33,0.14),_transparent_22%),radial-gradient(circle_at_80%_20%,_rgba(56,189,248,0.14),_transparent_20%),linear-gradient(180deg,_#050816_0%,_#090d18_48%,_#0d1324_100%)] px-4 py-8 text-zinc-100 md:px-8">
-      <section className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <div className="overflow-hidden rounded-[1.6rem] border border-cyan-400/15 bg-zinc-950/85 shadow-[0_30px_120px_rgba(0,0,0,0.45)] backdrop-blur">
-          <div className="flex items-center justify-between border-b border-white/8 bg-white/3 px-4 py-3">
+    <main className="flex min-h-screen items-center justify-center bg-[#0a0a0a] px-4 py-8 text-zinc-100 md:px-8">
+      <section className="w-full max-w-4xl">
+        <div className="overflow-hidden rounded-[1.1rem] border border-zinc-800 bg-black shadow-[0_12px_48px_rgba(0,0,0,0.35)]">
+          <div className="border-b border-zinc-800 bg-zinc-950 px-4 py-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-zinc-500">
+                  Fitness Coach Agent
+                </p>
+                <h1 className="mt-2 text-lg font-semibold text-zinc-100">
+                  Train smarter. Eat better. Track progress.
+                </h1>
+              </div>
+              <div className="flex flex-wrap gap-2 font-mono text-[11px] text-zinc-400">
+                <span className="rounded-full border border-zinc-800 bg-black px-3 py-1">
+                  workouts
+                </span>
+                <span className="rounded-full border border-zinc-800 bg-black px-3 py-1">
+                  nutrition
+                </span>
+                <span className="rounded-full border border-zinc-800 bg-black px-3 py-1">
+                  progress
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-950 px-4 py-3">
             <div className="flex items-center gap-3">
               <div className="flex gap-2">
                 <span className="h-3 w-3 rounded-full bg-rose-400/90" />
@@ -156,31 +175,52 @@ export default function Home() {
                 &gt;_ fitcoach.agent
               </span>
             </div>
-            <div className="flex items-center gap-2 font-mono text-xs text-zinc-500">
-              <span
-                className={`h-2 w-2 rounded-full ${
-                  isRunning ? "animate-pulse bg-emerald-400" : "bg-zinc-600"
-                }`}
-              />
-              <span>
-                {isRunning
-                  ? currentStage
-                  : isTerminalFocused
-                    ? "active"
-                    : "idle"}
-              </span>
-            </div>
+            {isRunning ? (
+              <div className="flex items-center gap-2">
+                <PulsatingButton
+                  aria-label="Live status"
+                  pulseColor="#22c55e"
+                  duration="1.5s"
+                  className="pointer-events-none h-2 w-2 rounded-full bg-emerald-500 p-0 text-transparent shadow-none"
+                >
+                  .
+                </PulsatingButton>
+                <span className="font-mono text-xs text-zinc-400">
+                  {currentStage}
+                </span>
+              </div>
+            ) : isTerminalFocused ? (
+              <div className="flex items-center gap-2">
+                <PulsatingButton
+                  aria-label="Live status"
+                  pulseColor="#22c55e"
+                  duration="1.5s"
+                  className="pointer-events-none h-2 w-2 rounded-full bg-emerald-500 p-0 text-transparent shadow-none"
+                >
+                  .
+                </PulsatingButton>
+                <span className="font-mono text-xs text-zinc-400">active</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span
+                  aria-label="Idle status"
+                  className="h-2 w-2 rounded-full bg-zinc-500"
+                />
+                <span className="font-mono text-xs text-zinc-400">idle</span>
+              </div>
+            )}
           </div>
 
           <div
             ref={outputRef}
-            className="min-h-[440px] max-h-[62vh] overflow-y-auto bg-[linear-gradient(180deg,_rgba(255,255,255,0.03),_transparent_30%),linear-gradient(90deg,_rgba(6,182,212,0.05),_transparent_30%)] px-5 py-5 font-mono text-sm leading-7"
+            className="min-h-[440px] max-h-[62vh] overflow-y-auto bg-black px-5 py-5 font-mono text-sm leading-7"
           >
             {entries.map((entry) => (
               <div key={entry.id} className="mb-3 last:mb-0">
                 {entry.kind === "assistant" ? (
-                  <div className="rounded-2xl border border-cyan-400/10 bg-cyan-400/4 px-4 py-3">
-                    <p className="mb-2 text-[11px] uppercase tracking-[0.28em] text-cyan-300/85">
+                  <div className="rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3">
+                    <p className="mb-2 text-[11px] uppercase tracking-[0.28em] text-zinc-500">
                       fitcoach
                     </p>
                     <p className="whitespace-pre-wrap text-zinc-100">
@@ -209,7 +249,21 @@ export default function Home() {
             ) : null}
           </div>
 
-          <div className="border-t border-white/8 bg-zinc-950 px-4 py-4">
+          <div className="border-t border-zinc-800 bg-black px-4 py-4">
+            <div className="mb-3 flex flex-wrap gap-2">
+              {quickPrompts.map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  onClick={() => {
+                    setCommand(prompt);
+                  }}
+                  className="rounded-full border border-zinc-800 bg-zinc-950 px-3 py-1 font-mono text-[11px] text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
             <div className="flex items-start gap-3">
               <span className="pt-2 font-mono text-cyan-300">&gt;</span>
               <div className="relative flex-1">
@@ -237,7 +291,7 @@ export default function Home() {
                 type="button"
                 onClick={() => void submitCommand()}
                 disabled={isRunning}
-                className="mt-1 flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-400/20 bg-cyan-400/10 font-mono text-cyan-200 transition hover:border-cyan-300/50 hover:bg-cyan-300/15 disabled:cursor-not-allowed disabled:opacity-40"
+                className="mt-1 flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900 font-mono text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {isRunning ? "…" : "→"}
               </button>
@@ -248,57 +302,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        <aside className="flex flex-col gap-6">
-          <div className="rounded-[1.6rem] border border-white/8 bg-white/4 p-5 shadow-[0_20px_80px_rgba(0,0,0,0.25)] backdrop-blur">
-            <p className="font-mono text-xs uppercase tracking-[0.28em] text-cyan-300">
-              Coach Console
-            </p>
-            <h1 className="mt-3 max-w-md text-4xl font-semibold tracking-tight text-white">
-              A terminal-like fitness coach with agent-style responses.
-            </h1>
-            <p className="mt-4 max-w-lg text-sm leading-7 text-zinc-400">
-              Ask for training plans, nutrition guidance, or progress reviews.
-              The interface keeps the interaction tight, command-driven, and
-              closer to an actual agent session.
-            </p>
-          </div>
-
-          <div className="rounded-[1.6rem] border border-white/8 bg-zinc-950/75 p-5 backdrop-blur">
-            <p className="font-mono text-xs uppercase tracking-[0.28em] text-zinc-500">
-              Quick Commands
-            </p>
-            <div className="mt-4 flex flex-col gap-3">
-              {promptSuggestions.map((prompt) => (
-                <button
-                  key={prompt}
-                  type="button"
-                  onClick={() => {
-                    setCommand(prompt);
-                    void submitCommand(prompt);
-                  }}
-                  className="rounded-2xl border border-white/8 bg-white/3 px-4 py-3 text-left font-mono text-sm text-zinc-300 transition hover:border-cyan-300/35 hover:bg-cyan-300/8 hover:text-white"
-                >
-                  {prompt}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-[1.6rem] border border-white/8 bg-[linear-gradient(180deg,_rgba(244,114,33,0.12),_rgba(244,114,33,0.02))] p-5">
-            <p className="font-mono text-xs uppercase tracking-[0.28em] text-amber-200">
-              Agent Behavior
-            </p>
-            <div className="mt-4 space-y-3 font-mono text-sm leading-6 text-zinc-200">
-              <p>1. Reads your prompt like an instruction, not a form field.</p>
-              <p>2. Shows system activity before returning the final answer.</p>
-              <p>
-                3. Prints output as a transcript instead of a single response
-                box.
-              </p>
-            </div>
-          </div>
-        </aside>
       </section>
     </main>
   );
