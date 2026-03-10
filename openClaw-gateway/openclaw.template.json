@@ -17,5 +17,12 @@
     "controlUi": {
       "enabled": false
     }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "__OPENCLAW_PRIMARY_MODEL__"
+      }
+    }
   }
 }
