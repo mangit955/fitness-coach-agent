@@ -34,6 +34,9 @@ class ChatRequest(BaseModel):
     message: str
     user_id: str
 
+@app.get("/")
+def root():
+    return {"status": "Fitness Coach API running"}
 
 @app.get("/health")
 def health() -> dict:
