@@ -1,11 +1,11 @@
 {
   "gateway": {
     "mode": "local",
-    "port": 18789,
+    "port": __OPENCLAW_GATEWAY_PORT__,
     "bind": "lan",
     "auth": {
       "mode": "token",
-      "token": "6f5b698c6f63e3ccbf908956dc332a93fbda3e3edbf7baed"
+      "token": "__OPENCLAW_GATEWAY_TOKEN__"
     },
     "http": {
       "endpoints": {

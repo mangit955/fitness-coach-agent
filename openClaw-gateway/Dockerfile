@@ -2,10 +2,13 @@ FROM node:22
 
 RUN npm install -g openclaw
 
-RUN mkdir -p /root/.openclaw
+WORKDIR /app
 
-COPY openclaw.json /root/.openclaw/openclaw.json
+COPY openclaw.template.json /app/openclaw.template.json
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+
+RUN chmod +x /app/docker-entrypoint.sh
 
 EXPOSE 18789
 
-CMD ["openclaw", "gateway"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]

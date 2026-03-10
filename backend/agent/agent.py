@@ -1,3 +1,4 @@
+import logging
 import re
 from typing import Optional
 
@@ -19,6 +20,8 @@ GOAL_KEYWORDS = {
     "general fitness": ("fit", "healthy", "general fitness", "active"),
     "strength": ("strength", "stronger", "power"),
 }
+
+logger = logging.getLogger(__name__)
 
 
 def _detect_goal(message: str) -> Optional[str]:
@@ -99,9 +102,8 @@ def run_agent(message: str, user_id: str) -> str:
                 message=normalized_message,
                 context=_build_openclaw_context(user_id),
             )
-        except Exception:
-            # Fallback keeps the app usable if the gateway is down or misconfigured.
-            pass
+        except Exception as exc:
+            logger.exception("OpenClaw request failed: %s", exc)
 
     goal = _detect_goal(lowered_message)
     if "workout" in lowered_message or "plan" in lowered_message or goal:
