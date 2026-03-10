@@ -30,6 +30,13 @@ const initialEntries: TerminalEntry[] = [
 const wait = (ms: number) =>
   new Promise((resolve) => window.setTimeout(resolve, ms));
 
+const formatAssistantText = (text: string) =>
+  text
+    .replace(/([.!?])\s+(?=[A-Z])/g, "$1\n\n")
+    .replace(/(\d+\.)\s/g, "\n$1 ")
+    .replace(/-\s/g, "\n- ")
+    .trim();
+
 const getRequestErrorMessage = (error: unknown) => {
   if (axios.isAxiosError(error)) {
     const axiosError = error as AxiosError<{
@@ -80,19 +87,20 @@ export default function Home() {
 
   const streamAssistantResponse = async (responseText: string) => {
     const assistantId = `${Date.now()}-assistant`;
+    const formattedResponse = formatAssistantText(responseText);
     appendEntry({
       id: assistantId,
       kind: "assistant",
       text: "",
     });
 
-    const chunks = responseText.split(/(\s+)/);
+    const chunks = formattedResponse.split(/(\s+)/);
     let rendered = "";
 
     for (const chunk of chunks) {
       rendered += chunk;
       updateEntry(assistantId, rendered);
-      await wait(chunk.trim() ? 20 : 8);
+      await wait(chunk.trim() ? 42 : 14);
     }
   };
 
