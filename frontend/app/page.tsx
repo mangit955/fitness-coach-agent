@@ -4,6 +4,7 @@ import axios, { AxiosError } from "axios";
 import { useEffect, useRef, useState } from "react";
 
 import { PulsatingButton } from "@/components/pulsating-button";
+import ShinyText from "@/components/ShinyText";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000/chat";
 const quickPrompts = ["fat loss plan", "protein target", "log weight 72.4"];
@@ -230,7 +231,18 @@ export default function Home() {
               {isRunning && currentStage === "thinking" ? (
                 <div className="flex justify-start">
                   <div className="rounded-[1.35rem] rounded-bl-md border border-white/5 bg-[#26272e] px-4 py-2.5 text-zinc-400">
-                    FitCoach is thinking...
+                    <ShinyText
+                      text="FitCoach is thinking..."
+                      speed={2}
+                      delay={0}
+                      color="#b5b5b5"
+                      shineColor="#ffffff"
+                      spread={120}
+                      direction="left"
+                      yoyo={false}
+                      pauseOnHover={false}
+                      disabled={false}
+                    />
                   </div>
                 </div>
               ) : null}
