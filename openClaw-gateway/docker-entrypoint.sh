@@ -6,6 +6,7 @@ TOKEN_VALUE="${OPENCLAW_GATEWAY_TOKEN:-}"
 PRIMARY_MODEL_VALUE="${OPENCLAW_PRIMARY_MODEL:-openai/gpt-5.2}"
 ANTHROPIC_API_KEY_VALUE="${ANTHROPIC_API_KEY:-}"
 OPENAI_API_KEY_VALUE="${OPENAI_API_KEY:-}"
+OPENROUTER_API_KEY_VALUE="${OPENROUTER_API_KEY:-}"
 RESET_MAIN_AGENT_VALUE="${OPENCLAW_RESET_MAIN_AGENT:-0}"
 
 strip_quotes() {
@@ -22,6 +23,7 @@ TOKEN_VALUE="$(strip_quotes "$TOKEN_VALUE")"
 PRIMARY_MODEL_VALUE="$(strip_quotes "$PRIMARY_MODEL_VALUE")"
 ANTHROPIC_API_KEY_VALUE="$(strip_quotes "$ANTHROPIC_API_KEY_VALUE")"
 OPENAI_API_KEY_VALUE="$(strip_quotes "$OPENAI_API_KEY_VALUE")"
+OPENROUTER_API_KEY_VALUE="$(strip_quotes "$OPENROUTER_API_KEY_VALUE")"
 RESET_MAIN_AGENT_VALUE="$(strip_quotes "$RESET_MAIN_AGENT_VALUE")"
 
 if [ -z "$TOKEN_VALUE" ]; then
@@ -42,7 +44,27 @@ sed \
   -e "s|__OPENCLAW_PRIMARY_MODEL__|$PRIMARY_MODEL_VALUE|g" \
   /app/openclaw.template.json > /root/.openclaw/openclaw.json
 
-if [ -n "$OPENAI_API_KEY_VALUE" ]; then
+if [ -n "$OPENROUTER_API_KEY_VALUE" ]; then
+  cat > /root/.openclaw/.env <<EOF
+OPENROUTER_API_KEY=$OPENROUTER_API_KEY_VALUE
+EOF
+
+  cat > /root/.openclaw/agents/main/agent/auth-profiles.json <<'EOF'
+{
+  "profiles": {
+    "openrouter:default": {
+      "provider": "openrouter",
+      "mode": "api_key"
+    }
+  },
+  "order": {
+    "openrouter": [
+      "openrouter:default"
+    ]
+  }
+}
+EOF
+elif [ -n "$OPENAI_API_KEY_VALUE" ]; then
   cat > /root/.openclaw/.env <<EOF
 OPENAI_API_KEY=$OPENAI_API_KEY_VALUE
 EOF
