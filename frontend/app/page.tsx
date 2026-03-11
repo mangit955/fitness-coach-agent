@@ -142,7 +142,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#0b0b0f] px-4 py-6 text-zinc-100">
+    <main className="flex min-h-screen items-center justify-center bg-[#0b0b0f] bg-[url('/bg1.png')] bg-cover bg-center px-4 py-6 text-zinc-100">
       <section className="w-full max-w-2xl">
         <div className="overflow-hidden rounded-[2rem] border border-white/8 bg-[#111216] shadow-[0_24px_90px_rgba(0,0,0,0.5)]">
           <div className="border-b border-white/5 bg-[#17181d] px-5 py-4">
