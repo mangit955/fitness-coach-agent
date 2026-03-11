@@ -18,6 +18,7 @@ class OpenClawClient:
         self.token = _clean_env("OPENCLAW_GATEWAY_TOKEN")
         self.agent_id = _clean_env("OPENCLAW_AGENT_ID", "main")
         self.timeout = int(_clean_env("OPENCLAW_TIMEOUT_SECONDS", "45"))
+        self.max_output_tokens = int(_clean_env("OPENCLAW_MAX_OUTPUT_TOKENS", "600"))
 
     def is_configured(self) -> bool:
         return bool(self.base_url and self.token and self.agent_id)
@@ -36,6 +37,7 @@ class OpenClawClient:
             json={
                 "model": f"openclaw:{self.agent_id}",
                 "input": prompt,
+                "max_output_tokens": self.max_output_tokens,
                 "metadata": {"user_id": user_id},
             },
             timeout=self.timeout,
