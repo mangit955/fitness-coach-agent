@@ -233,7 +233,7 @@ export default function Home() {
                   <div className="rounded-[1.35rem] rounded-bl-md border border-white/5 bg-[#26272e] px-4 py-2.5 text-zinc-400">
                     <ShinyText
                       text="FitCoach is thinking..."
-                      speed={4}
+                      speed={2}
                       delay={0}
                       color="#9a9a9a"
                       shineColor="#ffffff"
